@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var {restrict} = require("../src/auth");
-var db = require("../src/db");
 
 //Hier API Routen einfügen!
 // /user GET, PUT
