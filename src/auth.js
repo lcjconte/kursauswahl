@@ -1,6 +1,6 @@
 //Authentification module
 
-var db = require("../src/db");
+var db = require("../src/db_manage");
 var crypto = require("crypto");
 
 var sessions = {};
@@ -14,9 +14,8 @@ function restrict(level) {
     return function(req, res, next) {
         if (!("secret" in req.cookies)) {res.redirect("/login");return;}
         var secret = req.cookies["secret"];
-        if (secret.length != 8) {res.redirect("/login");return;}
-        let authentified = true;
-        if (authentified) {
+        if (secret.length != 16) {res.redirect("/login");return;}
+        if (secret in sessions && (level !== "admin" || sessions[secret][2])) {
             next(); //Zugriff auf die Seite falls gueltige session
         }
         else {
@@ -29,15 +28,19 @@ function restrict(level) {
  * 
  * @param {String} username 
  * @param {String} pwd 
- * @returns {boolean} Are credentials valid?
+ * @returns {String} Session id
  */
 function validate(username, pwd) {
     //Check if user exists
-    db.query("SELECT")
+
+    //TODO: 
     var hash = pwdhash(pwd, "abc");
     console.log(hash);
-    return true;
-    db.query("SELECT * FROM users WHERE username == ")
+
+    //Assume correct
+    let session_id = crypto.randomBytes(8).toString("hex");
+    sessions[session_id] = [username, 9, false]
+    return session_id;
 }
 
 function pwdhash(pwd, salt) {
@@ -48,4 +51,4 @@ function pwdhash(pwd, salt) {
     return hash;
 }
 
-module.exports = {restrict: restrict}
+module.exports = {restrict, validate, pwdhash}
