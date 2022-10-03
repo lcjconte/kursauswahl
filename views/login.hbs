@@ -1,14 +1,13 @@
 {{!-- Login Seite --}}
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
-<form action="/login" style="padding: 50px" method="post" autocomplete="on">
+<h1>Login:</h1>
+<form action="/login" style="padding: 50px" method="post" autocomplete="username">
   <div class="form-group">
-    <label for="uname_input">Email address</label>
+    <label for="uname_input">Username</label>
     <input type="text" class="form-control" id="uname_input" name="uname" placeholder="Enter Username">
   </div>
   <div class="form-group">
     <label for="upwd_input">Password</label>
     <input type="password" class="form-control" id="upwd_input" name="pwd" placeholder="Password">
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary">Login</button>
 </form>
