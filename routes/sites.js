@@ -1,13 +1,14 @@
 var express = require('express');
 var router = express.Router();
-var {restrict, validate} = require("../src/auth")
+var {restrict, validate, sessionUser} = require("../src/auth");
+var db = require("../src/db");
 
 router.get("/", (req, res, next) => {
     res.redirect("/login");
 })
 
 router.get('/login', function(req, res, next) {
-    res.render('login', { title: 'Kursauswahl' });
+    res.render('login', { title: 'Kursauswahl: Login' });
 });
 
 router.post("/login", (req, res, next) => {
@@ -20,17 +21,24 @@ router.post("/login", (req, res, next) => {
     }
     else {
         console.log(username, " logging in with ", pwd);
-        res.cookie("secret", sid, {maxAge: 43200000, sameSite: "strict"});
-        res.redirect("/make_selection");
+        res.cookie("secret", sid, {maxAge: 43200000, sameSite: "strict", httpOnly: "true"});
+        res.redirect("/dashboard");
     }
 });
 
 router.get('/make_selection', restrict("user"), function(req, res, next) {
-    res.render('selection', { title: 'Kursauswahl' });
+    var selectables = [{name: "Deutsch", id: "DE", h: "4"}, {name: "Italienisch", id: "IT", h: 4}];
+    res.render('selection', { title: 'Kursauswahl: Auswahl', selectables});
 });
 
-router.get('/students', restrict("admin"), function(req, res, next) {
-    res.render('students', { title: 'Kursauswahl' });
+router.get('/students', restrict("admin"), async function(req, res, next) {
+    let users = (await db.query("SELECT username FROM userdata")).rows.map((val) => val["username"]);
+    res.render('students', { title: 'Kursauswahl: User' , users});
 });
+
+router.get("/dashboard", restrict("user"), async function(req, res, next) {
+    let user = sessionUser(req);
+    res.render("dashboard", { title: "Dashboard" , show_admin: user[2]});
+})
 
 module.exports = router;
