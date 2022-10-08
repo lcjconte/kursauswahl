@@ -8,7 +8,13 @@ router.get("/", (req, res, next) => {
 })
 
 router.get('/login', function(req, res, next) {
-    res.render('login', { title: 'Kursauswahl: Login' });
+    let user = sessionUser(req);
+    if (user !== undefined) {
+        res.redirect("/dashboard");
+    }
+    else {
+        res.render('login', { title: 'Kursauswahl: Login' });
+    }
 });
 
 router.post("/login", (req, res, next) => {
@@ -29,6 +35,11 @@ router.post("/login", (req, res, next) => {
 router.get('/make_selection', restrict("user"), function(req, res, next) {
     var selectables = [{name: "Deutsch", id: "DE", h: "4"}, {name: "Italienisch", id: "IT", h: 4}];
     res.render('selection', { title: 'Kursauswahl: Auswahl', selectables});
+});
+
+router.post("/make_selection", restrict("user"), (req, res, next) => {
+    res.send("Unimplemented");
+    res.status(501);
 });
 
 router.get('/students', restrict("admin"), async function(req, res, next) {
