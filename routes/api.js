@@ -9,10 +9,8 @@ var {restrict} = require("../src/auth");
 
 //Testing
 
-router.post("/sayhello", (req, res, next) => {
-    console.log(req.body);
-    res.cookie("Var1", "foo");
-    res.send("Hello "+req.body["name"]);
+router.post("/ping", (req, res, next) => {
+    res.send("pong");
 });
 
 router.get("/test_restricted", restrict("admin"), (req, res, next) => {

@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var RateLimit = require('express-rate-limit');
 
 var siteRouter = require('./routes/sites');
 var apiRouter = require("./routes/api");
@@ -18,6 +19,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var limiter = RateLimit({
+  windowMs: 1*1000, // 1 second
+  max: 2
+});
+app.use(limiter);
 
 app.use('/', siteRouter);
 app.use("/api", apiRouter);

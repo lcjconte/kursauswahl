@@ -35,17 +35,26 @@ function restrict(level) {
  * @param {String} pwd 
  * @returns {String} Session id
  */
-function validate(username, pwd) {
+async function validate(username, pwd) {
     //Check if user exists
+    if (username.length > 50) {return undefined;}
+    var user = await db.user_by_name(username);
+    if (user === undefined) {return undefined;}
+    var hash = pwdhash(pwd, username);
+    if (hash == user.pwd) {
+        //Assume correct
+        let session_id = crypto.randomBytes(8).toString("hex");
+        sessions[session_id] = [username, user.userid, user.isadmin];
+        return session_id;
+    }
+    return undefined;
+}
 
-    //TODO: 
-    var hash = pwdhash(pwd, "abc");
-    console.log(hash);
-
-    //Assume correct
-    let session_id = crypto.randomBytes(8).toString("hex");
-    sessions[session_id] = [username, 9, true]
-    return session_id;
+function endSession(req) {
+    var secret = req.cookies["secret"];
+    if (secret in sessions) {
+        delete sessions[secret];
+    }
 }
 
 function pwdhash(pwd, salt) {
@@ -53,7 +62,7 @@ function pwdhash(pwd, salt) {
         .update(pwd)
         .update(salt)
         .digest().toString("hex");
-    return hash;
+    return hash.slice(0, 60);
 }
 
-module.exports = {restrict, validate, pwdhash, sessionUser}
+module.exports = {restrict, validate, pwdhash, sessionUser, endSession}
