@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var {restrict, validate, sessionUser, endSession} = require("../src/auth");
+var {restrict, createSession, sessionUser, endSession, tokens, verifyToken} = require("../src/auth");
 var db = require("../src/db");
 
 router.get("/", (req, res, next) => {
@@ -21,7 +21,7 @@ router.get('/login', function(req, res, next) {
 router.post("/login", async (req, res, next) => {
     var username = req.body.uname;
     var pwd = req.body.pwd;
-    let sid = await validate(username, pwd);
+    let sid = await createSession(username, pwd);
     if (sid == undefined) {
         // Return error page
         res.cookie("lwrong", "true", {maxAge: 1000*10, sameSite: "strict"});
@@ -41,11 +41,11 @@ router.get("/logout", restrict("user"), (req, res, next) => {
 });
 
 router.get('/make_selection', restrict("user"), function(req, res, next) {
-    var selectables = [{name: "Deutsch", id: "DE", h: "4"}, {name: "Italienisch", id: "IT", h: 4}];
-    res.render('selection', { title: 'Kursauswahl: Auswahl', selectables});
+    var token = tokens.create(sessionUser(req).csrf_secret);
+    res.render('selection', { title: 'Kursauswahl: Auswahl', csrf_token: token});
 });
 
-router.post("/make_selection", restrict("user"), (req, res, next) => {
+router.post("/make_selection", restrict("user"), verifyToken(), (req, res, next) => {
     res.send("Unimplemented");
     res.status(501);
 });
@@ -57,7 +57,7 @@ router.get('/students', restrict("admin"), async function(req, res, next) {
 
 router.get("/dashboard", restrict("user"), async function(req, res, next) {
     let user = sessionUser(req);
-    res.render("dashboard", { title: "Dashboard" , show_admin: user[2]});
+    res.render("dashboard", { title: "Dashboard" , show_admin: user.isadmin});
 })
 
 module.exports = router;
