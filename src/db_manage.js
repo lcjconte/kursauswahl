@@ -7,7 +7,7 @@ async function register(rgsusername, rgsisadmin, rgspwd, rgssalt) {
     if (result.rowCount === 0) {
         return false;
     }
-    else return false;
+    else return true;
 }
 async function update_pwd(userid, newpwd, newsalt) {
     var result = await db.query(`UPDATE userdata SET pwd = $2, salt =$3 WHERE userid = $1`, [userid, newpwd, newsalt])
