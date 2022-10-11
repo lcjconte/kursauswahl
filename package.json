@@ -18,6 +18,6 @@
     "pg": "^8.7.3"
   },
   "devDependencies": {
-    "eslint-plugin-import": "^2.26.0"
+    "eslint": "^8.25.0"
   }
 }
