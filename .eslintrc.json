@@ -240,5 +240,6 @@
       "n/process-exit-as-throw": "error",
   
       "promise/param-names": "error"
-    }
+    },
+    "extends": "standard"
   }
