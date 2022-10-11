@@ -16,5 +16,8 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "eslint-plugin-import": "^2.26.0"
   }
 }
