@@ -4,7 +4,7 @@ for (let i = 1; i <7; i++) {
 }
 check_boxes = {};
 const ids = ["de", "ita", "en", "fr", "lat", "mu", "ku", "ges", "eco", "git", "biphi", "etk", 
-                "rel", "geo", "bio", "phy", "ma", "ch", "inf", "sport", "SO"];
+                "rel", "geo", "bio", "phy", "ma", "ch", "inf", "sport", "soz"];
 const hours = [4, 4, 4, 4, 4, 2, 2, 3, 2, 2, 2, 2,
                 2, 2, 3, 3, 4, 3, 2, 2, 2];
 for (let i = 0; i < ids.length; i++) {
@@ -54,7 +54,8 @@ function verify_all() {
     cnt = count_appl(["mu", "ku"]);
     all_apply &= apply_rule(cnt == 1, r_list[2]);
     //Rule 3
-    //Sozialkunde missing
+    cnt = count_appl(["geo", "soz"]);
+    all_apply &= apply_rule(cnt <= 1, r_list[3]);
     //Rule 4
     cnt = count_appl(["rel", "etk"]);
     all_apply &= apply_rule(cnt <= 1, r_list[4]);
