@@ -24,15 +24,18 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">{{user.uid}}</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="#">Something else here</a>
             </div>
           </li>
         </ul>
+        {{#if user.uname}}
         <form class="form-inline my-2 my-lg-0">
+          <label style="padding-right: 10px">Logged in as {{user.uname}}</label>
           <a class="btn btn-outline-dark my-2 my-sm-0" href="/logout">Logout</a>
         </form>
+        {{/if}}
       </div>
     </nav>
     {{{body}}}

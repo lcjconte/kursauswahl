@@ -21,8 +21,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var limiter = RateLimit({
-  windowMs: 1*1000, // 1 second
-  max: 2
+  windowMs: 4*1000, // 4 second
+  max: 8
 });
 app.use(limiter);
 
@@ -37,7 +37,7 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
+  res.locals.message = req.app.get("env") === "development" ? err.message : "An internal error occured 😕";
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page

@@ -16,32 +16,25 @@ function sessionUser(req) {
 
 /**
  * Restricts acces to page to users depending on level
- * @param {String} level Entweder "user" oder "admin"
+ * @param {String} level Entweder "all", "user" oder "admin"
  */
-function restrict(level) {
+function restrict(level, with_csrf_token=false) {
     return function(req, res, next) {
-        let user = sessionUser(req);
-        if (user !== undefined && (level !== "admin" || user.isadmin)) {
-            next(); //Zugriff auf die Seite falls gueltige session
+        let user = sessionUser(req)
+        let valid_user = user !== undefined
+        if (!valid_user) {res.redirect("/login");return}
+        res.locals.user = user
+        let authorized_user = (level !== "admin" || user.isadmin)
+        let token_valid = tokens.verify(user.csrf_secret, req.body._csrf)
+        if (!authorized_user) {
+            res.redirect("/login")
+        }
+        else if (with_csrf_token && !token_valid) {
+            res.status(401)
+            res.send("Failed to validate csrf token");
         }
         else {
-            res.redirect("/login"); //Ansonsten zurueck zur Startseite
-        }
-    };
-}
-
-/**
- * Verifies csrf token
- */
- function verifyToken() {
-    return function(req, res, next) {
-        let user = sessionUser(req);
-        if (user !== undefined && tokens.verify(user.csrf_secret, req.body._csrf)) {
-            next(); 
-        }
-        else {
-            res.status(401);
-            res.send("csrf error"); 
+            next()
         }
     };
 }
@@ -50,7 +43,7 @@ function restrict(level) {
  * Validates user credentials and returns a session id if correct | **expensive**
  * @param {String} username 
  * @param {String} pwd 
- * @returns {String} Session id
+ * @returns {Promise<String>} Session id
  */
 async function createSession(username, pwd) {
     if (username.length > 50) {return undefined;}
@@ -83,4 +76,4 @@ function pwdhash(pwd, salt) {
     return crypto.pbkdf2Sync(pwd, salt, 100000, 45, "sha512");
 }
 
-module.exports = {restrict, createSession, pwdhash, sessionUser, endSession, tokens, verifyToken};
+module.exports = {restrict, createSession, pwdhash, sessionUser, endSession, tokens};

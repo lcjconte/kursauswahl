@@ -44,7 +44,7 @@ async function delete_user(userid) {
 
 }
 async function get_selection(userid) {
-    var result = (await db.query(`SELECT * FROM selections WHERE userid = $1`, [userid]))[0];
+    var result = (await db.query(`SELECT * FROM selections WHERE userid = $1`, [userid])).rows[0];
     return result;
 }
 async function set_selection_alt(userid, sel) {
