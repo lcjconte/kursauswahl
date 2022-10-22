@@ -24,6 +24,7 @@ function restrict(level, with_csrf_token=false) {
         let valid_user = user !== undefined
         if (!valid_user) {res.redirect("/login");return}
         res.locals.user = user
+        res.locals.csrf_token = tokens.create(user.csrf_secret);
         let authorized_user = (level !== "admin" || user.isadmin)
         let token_valid = tokens.verify(user.csrf_secret, req.body._csrf)
         if (!authorized_user) {

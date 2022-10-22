@@ -1,22 +1,51 @@
 {{! User creation and admin}}
 <div class="container">
 <div class="row">
-    <div class="col">a</div>
     <div class="col">
-    <form action="" style="padding: 50px" method="post" autocomplete="username">
+    <ul class="group_list" style="padding: 50px">
+    {{#each groups}}
+        <li><a href="/group/{{this}}">{{this}}</a></li>
+    {{/each}}
+    </ul>
+    </div>
+    <div class="col">
+    <form id="register_form" class="needs-validation" action="/register_user" style="padding: 50px" method="post" novalidate>
+    <input type="hidden" value="{{csrf_token}}" name="_csrf">
     <h2>Register new user</h2>
     {{#if cwrong}}
     <div class="alert alert-danger" role="alert">
-    Wrong username or password
+    Failed to register new user
+    </div>
+    {{/if}}
+    {{#if csucc}}
+    <div class="alert alert-success" role="alert">
+    Registered new user
     </div>
     {{/if}}
     <div class="form-group">
         <label for="uname_input">Username</label>
-        <input type="text" class="form-control" id="uname_input" name="uname" placeholder="Enter Username">
+        <input type="text" class="form-control" id="uname_input" name="name" autocomplete="name" placeholder="Enter Username" required>
+        <div class="invalid-feedback">Required</div>
     </div>
     <div class="form-group">
         <label for="upwd_input">Password</label>
-        <input type="password" class="form-control" id="upwd_input" name="pwd" placeholder="Password">
+        <input type="password" class="form-control" id="upwd_input" name="pwd" autocomplete="off" placeholder="Password" required>
+        <div class="invalid-feedback">Required</div>
+    </div>
+    <div class="form-group">
+        <label for="upwd_input">Confirm Password</label>
+        <input type="password" class="form-control" id="upwd_confirm" autocomplete="off" placeholder="Password" required>
+        <div class="invalid-feedback">Required</div>
+    </div>
+    <div class="form-group">
+        <label for="ugroup">Group</label>
+        <input type="text" class="form-control" id="ugroup" name="group" placeholder="" maxlength="4">
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input id="isadmin" type="checkbox" class="form-check-input" name="isadmin">
+            <label for="isadmin" class="form-check-label">Administrator</label>
+        </div>
     </div>
     <button type="submit" class="btn btn-primary">Register</button>
     </form>
@@ -25,3 +54,20 @@
 </div>
 </div>
 
+<script>
+  window.addEventListener('load', function() {
+    var form = document.getElementById("register_form");
+    form.addEventListener('submit', function(event) {
+    if (form.checkValidity() === false) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    if (document.getElementById("upwd_input").value != document.getElementById("upwd_confirm").value) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        alert("Passwords don't match");
+    }
+    form.classList.add('was-validated');
+    }, false);
+  }, false);
+</script>

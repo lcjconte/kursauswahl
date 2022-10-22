@@ -1,7 +1,7 @@
 var db = require("../src/db");
 
-async function register(rgsusername, rgsisadmin, rgspwd, rgssalt) {
-    var result = await db.query(`INSERT INTO userdata (username, isadmin, pwd, salt) VALUES ($1, $2, $3, $4);`, [rgsusername, rgsisadmin, rgspwd, rgssalt])
+async function register(username, isadmin, pwdhash, salt, group) {
+    var result = await db.query(`INSERT INTO userdata (username, isadmin, pwd, salt, gruppe) VALUES ($1, $2, $3, $4, $5);`, [username, isadmin, pwdhash, salt, group])
     if (result.rowCount === 0) {
         return false;
     }
@@ -80,5 +80,15 @@ async function user_by_userid(userid) {
     }
     return result.rows[0];
 }
+async function get_groups() {
+    var result = await db.query("SELECT DISTINCT (gruppe) FROM userdata")
+    groups = result.rows.map(el => el["gruppe"])
+    groups.sort()
+    return groups
+}
+async function users_by_group(group_name) {
+    var result = await db.query("SELECT * FROM userdata WHERE gruppe = $1", [group_name])
+    return result.rows;
+}
 
-module.exports = { register, update_pwd, update_isadmin, delete_user, get_selection, set_selection, set_selection_alt, register, user_by_name, user_by_userid};
+module.exports = { register, update_pwd, update_isadmin, delete_user, get_selection, set_selection, set_selection_alt, user_by_name, user_by_userid, get_groups, users_by_group};

@@ -25,7 +25,15 @@ var limiter = RateLimit({
   max: 8
 });
 app.use(limiter);
-
+//Flash middleware
+app.use((req, res, next) => {
+  for (const cookie in req.cookies) {
+    if (cookie.startsWith("__")) {
+      res.clearCookie(cookie, {sameSite: "strict"});
+    }
+  }
+  next()
+})
 app.use('/', siteRouter);
 app.use("/api", apiRouter);
 
