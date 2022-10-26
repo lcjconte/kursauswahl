@@ -1,0 +1,23 @@
+{
+    "DE": "Deutsch",
+    "IT": "Italienisch",
+    "EN": "Englisch",
+    "FR": "Französisch",
+    "LA": "Latein",
+    "MU": "Musik",
+    "KU": "Kunst",
+    "GE": "Geschichte",
+    "EK": "Erdkunde",
+    "SO": "Sozialkunde",
+    "EC": "Economics",
+    "RE": "Religion",
+    "ET": "Ethik",
+    "FI": "Philosofie",
+    "ST": "Storia",
+    "MA": "Mathematik",
+    "PH": "Physik",
+    "BI": "Biologie",
+    "CH": "Chemie",
+    "CS": "Informatik",
+    "SP": "Sport"
+}

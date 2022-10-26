@@ -51,7 +51,7 @@ async function createSession(username, pwd) {
     var user = await db.user_by_name(username);
     if (user === undefined) {return undefined;}
     var hash = pwdhash(pwd, user.salt);
-    if (crypto.timingSafeEqual(hash, Buffer.from(user.pwd, "base64"))) {
+    if (crypto.timingSafeEqual(hash, Buffer.from(user.pwdhash, "base64"))) {
         let session_id = crypto.randomBytes(8).toString("hex");
         let csrf_secret = await tokens.secret();
         sessions[session_id] = {uname: username, uid: user.userid, isadmin: user.isadmin, csrf_secret};

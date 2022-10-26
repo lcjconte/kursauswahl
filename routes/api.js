@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var {restrict, sessionUser} = require("../src/auth");
 var db = require("../src/db_manage");
-var {newUser} = require("../src/users");
 var subjects = require("../src/subject_selection");
 
 router.post("/ping", (req, res, next) => {

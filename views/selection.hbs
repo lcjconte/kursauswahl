@@ -35,7 +35,7 @@
 
     <tbody class="table-group-divider">
         {{> srowf name="Deutsch" id="de" h="4"}}
-        {{> srow name="Italienisch" id="ita" h="4"}}
+        {{> srowf name="Italienisch" id="ita" h="4"}}
         {{> srow name="Englisch" id="en" h="4"}}
         {{> srow name="Französisch" id="fr" h="4"}}
         {{> srow name="Latein" id="lat" h="4"}}
@@ -84,6 +84,16 @@
         <li><b>Wochenstundzahl:</b><b class="alert alert-primary" id="hcount">4</b></li>
     </ul>
     <button type="button" class="btn btn-success" value="Verify" onclick="verify_all()" hidden>Verify</button>
+    {{#if failure}}
+    <div class="alert alert-danger" role="alert">
+    Selection failed
+    </div>
+    {{/if}}
+    {{#if success}}
+    <div class="alert alert-success" role="alert">
+    Selection succeded
+    </div>
+    {{/if}}
 </div>
 </div>
 </div>

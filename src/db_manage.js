@@ -1,14 +1,24 @@
-var db = require("../src/db");
+var db = require("./db");
+var {subject_ordered} = require("./subject_selection");
 
 async function register(username, isadmin, pwdhash, salt, group) {
-    var result = await db.query(`INSERT INTO userdata (username, isadmin, pwd, salt, gruppe) VALUES ($1, $2, $3, $4, $5);`, [username, isadmin, pwdhash, salt, group])
-    if (result.rowCount === 0) {
-        return false;
+    const client = await db.connect()
+    try {
+        await client.query("BEGIN")
+        var user_inserted = await client.query("INSERT INTO userdata (username, isadmin, pwdhash, salt, group_tag) VALUES ($1, $2, $3, $4, $5) RETURNING userid", [username, isadmin, pwdhash, salt, group])
+        if (user_inserted.rows[0] === undefined) {throw new Error("Failed to insert user")}
+        await client.query("INSERT INTO selections (userid) VALUES ($1)", [user_inserted.rows[0]["userid"]])
+        await client.query("COMMIT")
+    } catch (e) {
+        await client.query("ROLLBACK")
+        throw e
+    } finally {
+        client.release()
     }
-    else return true;
+    return true
 }
 async function update_pwd(userid, newpwd, newsalt) {
-    var result = await db.query(`UPDATE userdata SET pwd = $2, salt = $3 WHERE userid = $1`, [userid, newpwd, newsalt])
+    var result = await db.query(`UPDATE userdata SET pwdhash = $2, salt = $3 WHERE userid = $1`, [userid, newpwd, newsalt])
     if (result.rowCount === 0) {
         return false;
     }
@@ -22,25 +32,8 @@ async function update_isadmin(userid, isadmin) {
     return true;
 }
 async function delete_user(userid) {
-    let ans = false
-    try {
-        const client = await db.connect()
-        try {
-            await client.query('BEGIN')
-            await client.query('DELETE FROM selections WHERE userid = $1', [userid])
-            await client.query("DELETE FROM userdata WHERE userid = $1", [userid])
-            await client.query('COMMIT')
-            ans = true
-        } catch (e) {
-            await client.query('ROLLBACK')
-            throw e
-        } finally {
-            client.release()
-        }
-    } catch (error) {
-        console.log(error.stack)
-    }
-    return ans
+    var result = await db.query("DELETE FROM userdata WHERE userid = $1", [userid])
+    return result.rowCount !== 0
 
 }
 async function get_selection(userid) {
@@ -50,17 +43,17 @@ async function get_selection(userid) {
 async function set_selection_alt(userid, sel) {
     let f = s => sel[s]!==undefined;
     return set_selection(userid, 
-        f("de"), f("ita"), f("en"), f("fr"), f("lat"), f("mu"), f("ku"), 
-        f("ges"), f("eco"), f("git"), f("biphi"), f("etk"), f("rel"), f("geo"),
-        f("bio"), f("phy"), f("ma"), f("ch"), f("inf"), f("sport"), f("soz"));
+        f("DE"),f("IT"),f("EN"),f("FR"),f("LA"),f("MU"),f("KU"),f("GE"),
+        f("EK"),f("SO"),f("EC"),f("RE"),f("ET"),f("FI"),f("ST"),f("MA"),
+        f("PH"),f("BI"),f("CH"),f("IN"),f("SP"));
 }
-async function set_selection(userid, de, ita, en, fr, lat, mu, ku, ges, eco, git, biphi, etk, rel, geo, bio, phy, ma, ch, inf, sport, soz) {
-    var result = await db.query("UPDATE selections SET de=$1, ita=$2, en=$3, fr=$4, lat=$5, "+ 
-                                "mu=$6, ku=$7, ges=$8, eco=$9, git=$10, biphi=$11, etk=$12, "+
-                                "rel=$13, geo=$14, bio=$15, phy=$16, ma=$17, ch=$18, inf=$19, sport=$20, soz=$21 "+
-                                "WHERE userid=$22", 
-                                [de, ita, en, fr, lat, mu, ku, ges, eco, git, biphi, etk, 
-                                    rel, geo, bio, phy, ma, ch, inf, sport, soz, userid])
+async function set_selection(userid, DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,ST,MA,PH,BI,CH,CS,SP) {
+    var result = await db.query(
+        "UPDATE selections SET DE=$1, IT=$2, EN=$3, FR=$4, LA=$5, MU=$6, KU=$7, GE=$8, \
+        EK=$9, SO=$10, EC=$11, RE=$12, ET=$13, FI=$14, ST=$15, MA=$16, PH=$17, BI=$18, \
+        CH=$19, IN=$20, SP=$21, submitted=true"+
+        "WHERE userid=$22", 
+        [DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,ST,MA,PH,BI,CH,CS,SP, userid])
     if (result.rowCount === 0) {
         return false;
     }
@@ -81,14 +74,34 @@ async function user_by_userid(userid) {
     return result.rows[0];
 }
 async function get_groups() {
-    var result = await db.query("SELECT DISTINCT (gruppe) FROM userdata")
-    groups = result.rows.map(el => el["gruppe"])
+    var result = await db.query("SELECT DISTINCT (group_tag) FROM userdata")
+    groups = result.rows.map(el => el["group_tag"])
     groups.sort()
     return groups
 }
 async function users_by_group(group_name) {
-    var result = await db.query("SELECT * FROM userdata WHERE gruppe = $1", [group_name])
+    var result = await db.query("SELECT * FROM userdata WHERE group_tag = $1", [group_name])
     return result.rows;
 }
+async function selections_as_csv(group_name) {
+    var a = await db.query("\
+        SELECT (username, DE, IT, EN, FR, LA, MU, KU, GE, EK, SO, EC, RE, ET, FI, ST, MA, PH, BI, CH, IN, SP) FROM selections \
+        INNER JOIN userdata on userdata.userid = selections.userid \
+        WHERE userdata.gruppe = $1 \
+        ", [group_name])
+    var csv_string = "Name,"
+    subject_ordered.forEach(val => {
+        csv_string += val+","
+    })
+    csv_string += "\n"
+    a.rows.forEach(row => {
+        var s = row.row;
+        s.substring(1, s.length-1).split(",").forEach(val => {
+            csv_string += val+","
+        })
+        csv_string += "\n"
+    })
+    return csv_string
+}
 
-module.exports = { register, update_pwd, update_isadmin, delete_user, get_selection, set_selection, set_selection_alt, user_by_name, user_by_userid, get_groups, users_by_group};
+module.exports = { register, update_pwd, update_isadmin, delete_user, get_selection, set_selection, set_selection_alt, user_by_name, user_by_userid, get_groups, users_by_group, selections_as_csv};

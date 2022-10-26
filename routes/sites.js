@@ -4,6 +4,7 @@ var {restrict, createSession, sessionUser, endSession} = require("../src/auth");
 var db = require("../src/db_manage");
 var {newUser} = require("../src/users");
 var {flashCookie} = require("../src/helpers");
+const { subject_ordered } = require('../src/subject_selection');
 
 router.get("/", (req, res, next) => {
     res.redirect("/login");
@@ -43,12 +44,29 @@ router.get("/logout", restrict("user"), (req, res, next) => {
 });
 
 router.get('/make_selection', restrict("user"), (req, res, next) => {
-    res.render('selection', { title: 'Kursauswahl: Auswahl'});
+    res.render('selection', { 
+        title: 'Kursauswahl: Auswahl', failure: "__selF" in req.cookies, success: "__selS" in req.cookies
+    })
 });
 
-router.post("/make_selection", restrict("user", true), (req, res, next) => {
-    res.send("Unimplemented");
-    res.status(501);
+router.post("/make_selection", restrict("user", true), async (req, res, next) => {
+    try {
+    var sel_object = {};
+    subject_ordered.forEach(el => {
+        if (el in req.body && req.body[el] == "on") {
+            sel_object[el] = true;
+            console.log(el);
+        }
+    })
+    var ans = await db.set_selection_alt(res.locals.user.uid, sel_object)
+    if (ans) {
+        flashCookie(res, "selS", "")
+    }
+    else {
+        flashCookie(res, "selF", "")
+    }
+    res.redirect("/make_selection")
+    } catch (error) {next(error)}
 });
 
 router.get("/dashboard", restrict("user"), async function(req, res, next) { try {
@@ -71,12 +89,21 @@ router.get("/group/:gname", restrict("admin"), async (req, res, next) => {
     } catch (error) {next(error)}
 });
 
+router.get("/group/:gname/download", restrict("admin"), async (req, res, next) => {
+    try {
+        var csv = await db.selections_as_csv(req.params.gname)
+        res.attachment("selections"+req.params.gname+".csv")
+        res.type("txt")
+        res.send(csv)
+    } catch (error) {next(error)}
+})
+
 router.post("/register_user", restrict("admin", true), async (req, res, next) => {
     try {
     let uname = req.body.name;
     let upwd = req.body.pwd;
-    let isadmin = req.body.isadmin;
-    let group = req.body.group;
+    let isadmin = req.body.isadmin === "on";
+    let group = req.body.group || "na";
     let success = await newUser(uname, upwd, isadmin, group);
     if (success) {
         flashCookie(res, "regS", "")
