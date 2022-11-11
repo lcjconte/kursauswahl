@@ -43,17 +43,17 @@ async function get_selection(userid) {
 async function set_selection_alt(userid, sel) {
     let f = s => sel[s]!==undefined;
     return set_selection(userid, 
-        f("DE"),f("IT"),f("EN"),f("FR"),f("LA"),f("MU"),f("KU"),f("GE"),
-        f("EK"),f("SO"),f("EC"),f("RE"),f("ET"),f("FI"),f("ST"),f("MA"),
-        f("PH"),f("BI"),f("CH"),f("CS"),f("SP"));
+        f("de"),f("it"),f("en"),f("fr"),f("la"),f("mu"),f("ku"),f("ge"),
+        f("ek"),f("so"),f("ec"),f("re"),f("et"),f("fi"),f("st"),f("ma"),
+        f("ph"),f("bi"),f("ch"),f("cs"),f("sp"));
 }
-async function set_selection(userid, DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,ST,MA,PH,BI,CH,CS,SP) {
+async function set_selection(userid, de,it,en,fr,la,mu,ku,ge,ek,so,ec,re,et,fi,st,ma,ph,bi,ch,cs,sp) {
     var result = await db.query(
-        "UPDATE selections SET DE=$1, IT=$2, EN=$3, FR=$4, LA=$5, MU=$6, KU=$7, GE=$8, \
-        EK=$9, SO=$10, EC=$11, RE=$12, ET=$13, FI=$14, ST=$15, MA=$16, PH=$17, BI=$18, \
-        CH=$19, CS=$20, SP=$21, submitted=true \
+        "UPDATE selections SET de=$1, it=$2, en=$3, fr=$4, la=$5, mu=$6, ku=$7, ge=$8, \
+        ek=$9, so=$10, ec=$11, re=$12, et=$13, fi=$14, st=$15, ma=$16, ph=$17, bi=$18, \
+        ch=$19, cs=$20, sp=$21, submitted=true \
         WHERE userid=$22", 
-        [DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,ST,MA,PH,BI,CH,CS,SP, userid])
+        [de,it,en,fr,la,mu,ku,ge,ek,so,ec,re,et,fi,st,ma,ph,bi,ch,cs,sp, userid])
     if (result.rowCount === 0) {
         return false;
     }
@@ -85,7 +85,7 @@ async function users_by_group(group_name) {
 }
 async function selections_as_csv(group_name) {
     var a = await db.query("\
-        SELECT (username, DE, IT, EN, FR, LA, MU, KU, GE, EK, SO, EC, RE, ET, FI, ST, MA, PH, BI, CH, IN, SP) FROM selections \
+        SELECT (username, de, it, en, fr, la, mu, ku, ge, ek, so, ec, re, et, fi, st, ma, ph, bi, ch, in, sp) FROM selections \
         INNER JOIN userdata on userdata.userid = selections.userid \
         WHERE userdata.gruppe = $1 \
         ", [group_name])
