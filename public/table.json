@@ -1,0 +1,42 @@
+[
+    {
+        "title": "Aufgabenfeld I",
+        "rows": [
+            {"id": "DE", "hours": 4, "force": true},
+            {"id": "IT", "hours": 4, "force": true},
+            {"id": "EN", "hours": 4, "force": false},
+            {"id": "FR", "hours": 4, "force": false},
+            {"id": "LA", "hours": 4, "force": false},
+            {"id": "KU", "hours": 2, "force": false},
+            {"id": "MU", "hours": 2, "force": false}
+        ]
+    },
+    {
+        "title": "Aufgabenfeld II",
+        "rows": [
+            {"id": "GE", "hours": 3, "force": true},
+            {"id": "EK", "hours": 2, "force": false, "name": "Erdkunde (f)"},
+            {"id": "SO", "hours": 2, "force": false},
+            {"id": "EC", "hours": 2, "force": false},
+            {"id": "RE", "hours": 2, "force": false},
+            {"id": "ET", "hours": 2, "force": false},
+            {"id": "FI", "hours": 2, "force": false},
+            {"id": "ST", "hours": 2, "force": false}
+        ]
+    },
+    {
+        "title": "Aufgabenfeld III",
+        "rows": [
+            {"id": "MA", "hours": 4, "force": true},
+            {"id": "PH", "hours": 3, "force": false},
+            {"id": "BI", "hours": 3, "force": false},
+            {"id": "CH", "hours": 3, "force": false},
+            {"id": "CS", "hours": 2, "force": false}
+        ]
+    },
+    {
+        "rows": [
+            {"id": "SP", "hours": 2, "force": true}
+        ]
+    }
+]

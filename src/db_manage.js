@@ -18,14 +18,14 @@ async function register(username, isadmin, pwdhash, salt, group) {
     return true
 }
 async function update_pwd(userid, newpwd, newsalt) {
-    var result = await db.query(`UPDATE userdata SET pwdhash = $2, salt = $3 WHERE userid = $1`, [userid, newpwd, newsalt])
+    var result = await db.query("UPDATE userdata SET pwdhash = $2, salt = $3 WHERE userid = $1", [userid, newpwd, newsalt])
     if (result.rowCount === 0) {
         return false;
     }
     return true;
 }
 async function update_isadmin(userid, isadmin) {
-    var result = await db.query(`UPDATE userdata SET isadmin = $1 WHERE userid = $2`, [isadmin, userid])
+    var result = await db.query("UPDATE userdata SET isadmin = $1 WHERE userid = $2", [isadmin, userid])
     if (result.rowCount === 0) {
         return false;
     }
@@ -37,7 +37,7 @@ async function delete_user(userid) {
 
 }
 async function get_selection(userid) {
-    var result = (await db.query(`SELECT * FROM selections WHERE userid = $1`, [userid])).rows[0];
+    var result = (await db.query("SELECT * FROM selections WHERE userid = $1", [userid])).rows[0];
     return result;
 }
 async function set_selection_alt(userid, sel) {
@@ -45,14 +45,14 @@ async function set_selection_alt(userid, sel) {
     return set_selection(userid, 
         f("DE"),f("IT"),f("EN"),f("FR"),f("LA"),f("MU"),f("KU"),f("GE"),
         f("EK"),f("SO"),f("EC"),f("RE"),f("ET"),f("FI"),f("ST"),f("MA"),
-        f("PH"),f("BI"),f("CH"),f("IN"),f("SP"));
+        f("PH"),f("BI"),f("CH"),f("CS"),f("SP"));
 }
 async function set_selection(userid, DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,ST,MA,PH,BI,CH,CS,SP) {
     var result = await db.query(
         "UPDATE selections SET DE=$1, IT=$2, EN=$3, FR=$4, LA=$5, MU=$6, KU=$7, GE=$8, \
         EK=$9, SO=$10, EC=$11, RE=$12, ET=$13, FI=$14, ST=$15, MA=$16, PH=$17, BI=$18, \
-        CH=$19, IN=$20, SP=$21, submitted=true"+
-        "WHERE userid=$22", 
+        CH=$19, CS=$20, SP=$21, submitted=true \
+        WHERE userid=$22", 
         [DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,ST,MA,PH,BI,CH,CS,SP, userid])
     if (result.rowCount === 0) {
         return false;
@@ -60,14 +60,14 @@ async function set_selection(userid, DE,IT,EN,FR,LA,MU,KU,GE,EK,SO,EC,RE,ET,FI,S
     return true;
 }
 async function user_by_name(username) {
-    var result = await db.query(`SELECT * FROM userdata WHERE username LIKE $1;`, [username])
+    var result = await db.query("SELECT * FROM userdata WHERE username LIKE $1;", [username])
     if (result.rowCount === 0) {
         return undefined;
     }
     return result.rows[0];
 }
 async function user_by_userid(userid) {
-    var result = await db.query(`SELECT * FROM userdata WHERE userid = $1`, [userid])
+    var result = await db.query("SELECT * FROM userdata WHERE userid = $1", [userid])
     if (result.rowCount === 0) {
         return undefined;
     }

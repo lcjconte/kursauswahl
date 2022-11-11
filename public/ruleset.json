@@ -1,0 +1,41 @@
+[
+    {
+        "desc": "Deutsch gilt nicht als Fremdsprache"
+    },
+    {
+        "desc": "Es müssen 2-4 Fremdsprachen gewählt werden",
+        "ge": 2,
+        "le": 4,
+        "subs": ["EN", "IT", "FR", "LA"]
+    },
+    {
+        "desc": "It, E, F, L gelten unabhängig von der Nationalität als Fremdsprachen"
+    },
+    {
+        "desc": "Es <b>muss</b> Kunst <b>oder</b> Musik gewählt werden",
+        "ge": 1,
+        "le": 1,
+        "subs": ["KU", "MU"]
+    },
+    {
+        "desc": "Es kann nur Erdkunde <b>oder</b> Sozialkunde gewählt werden",
+        "le": 1,
+        "subs": ["EK", "SO"]
+    },
+    {
+        "desc": "Es kann nur Religion <b>oder</b> Ethik gewählt werden",
+        "le": 1,
+        "subs": ["RE", "ET"]
+    },
+    {
+        "desc": "Wenn keine Philosophie belegt wird, dann muss Religion oder Ethik belegt werden",
+        "ge": 1,
+        "subs": ["FI", "RE", "ET"]
+    },
+    {
+        "desc": "Es müssen <b>genau zwei</b> der Fächer Physik, Biologie oder Chemie gewählt werden",
+        "ge": 2,
+        "le": 2,
+        "subs": ["PH", "BI", "CH"]
+    }
+]

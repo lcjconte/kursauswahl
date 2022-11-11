@@ -60,6 +60,10 @@ async function createSession(username, pwd) {
     return undefined;
 }
 
+function deleteSession(session_id) {
+    delete sessions[secret];
+}
+
 function endSession(req) {
     var secret = req.cookies["secret"];
     if (secret in sessions) {
@@ -77,4 +81,4 @@ function pwdhash(pwd, salt) {
     return crypto.pbkdf2Sync(pwd, salt, 100000, 45, "sha512");
 }
 
-module.exports = {restrict, createSession, pwdhash, sessionUser, endSession, tokens};
+module.exports = {restrict, createSession, pwdhash, sessionUser, endSession, deleteSession};

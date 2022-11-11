@@ -9,78 +9,51 @@
 <form>
 <input type="hidden" value="{{csrf_token}}" name="_csrf">
 <table class="table table-sm">
-    <tbody>
-        <tr>
-            <th scope="col">Aufgabenfeld I</th>
-            <th scope="col">Wochenstundzahl</th>
-            <th scope="col">Wahl</th>
-        </tr>
-    </tbody>
-
     {{#*inline "srow"}}
     <tr>
         <td scope="row">{{name}}</td>
         <td>{{h}}</td>
-        <td><input class="form-check-input" type="checkbox" id="{{id}}" name="{{id}}" onclick="verify_all()"></td>
+        <td><input class="form-check-input subject_checkbox" type="checkbox" id="{{id}}" name="{{id}}" onclick="verify_all()"></td>
     </tr>
     {{/inline}}
     {{#*inline "srowf"}}
     <tr>
         <td scope="row">{{name}}</td>
         <td>{{h}}</td>
-        <td><input class="form-check-input" type="checkbox" checked disabled id="{{id}}"></td>
+        <td><input class="form-check-input subject_checkbox" type="checkbox" checked disabled id="{{id}}"></td>
         <input class="form-check-input" type="checkbox" checked hidden name="{{id}}">
     </tr>
     {{/inline}}
 
-    <tbody class="table-group-divider">
-        {{> srowf name="Deutsch" id="de" h="4"}}
-        {{> srowf name="Italienisch" id="ita" h="4"}}
-        {{> srow name="Englisch" id="en" h="4"}}
-        {{> srow name="Französisch" id="fr" h="4"}}
-        {{> srow name="Latein" id="lat" h="4"}}
-        {{> srow name="Kunst" id="ku" h="2"}}
-        {{> srow name="Musik" id="mu" h="2"}}                                                     
-    </tbody>
-
-    <tbody><tr><th scope="col" colspan="3">Aufgabenfeld II</th></tr></tbody>
-
-    <tbody class="table-group-divider">
-        {{> srowf name="Geschichte" id="ges" h="3"}}
-        {{> srow name="Erdkunde (f)" id="geo" h="2"}}
-        {{> srow name="Sozialkunde (f)" id="soz" h="2"}}
-        {{> srow name="Economics" id="eco" h="2"}}
-        {{> srow name="Religion" id="rel" h="2"}}
-        {{> srow name="Ethik" id="etk" h="2"}}
-        {{> srow name="Philosophie/Filosofia" id="biphi" h="2"}}
-        {{> srow name="Storia" id="git" h="2"}}
-    </tbody>
-
-    <tbody><tr><th scope="col" colspan="3">Aufgabenfeld III</th></tr></tbody>
-
-    <tbody class="table-group-divider">
-        {{>srowf name="Mathematik" id="ma" h="4"}}
-        {{>srow name="Physik" id="phy" h="3"}}
-        {{>srow name="Biologie" id="bio" h="3"}}
-        {{>srow name="Chemie" id="ch" h="3"}}
-        {{>srow name="Informatik" id="inf" h="2"}}
-        <tr><th></th></tr>
-        {{>srowf name="Sport" id="sport" h="2"}}
-    </tbody>
+    {{#each table}}
+        <tbody>
+            <tr>
+                <th scope="col">{{this.title}}</th>
+                <th scope="col">Wochenstundzahl</th>
+                <th scope="col">Wahl</th>
+            </tr>
+        </tbody>
+        <tbody class="table-group-divider">
+            {{#each this.rows}}
+                {{#if this.force}}
+                    {{> srowf name=this.name id=this.id h=this.hours}}
+                {{/if}}
+                {{#unless this.force}}
+                    {{> srow name=this.name id=this.id h=this.hours}}
+                {{/unless}}
+            {{/each}}
+        </tbody>
+    {{/each}}
 </table>
 <button type="submit" class="btn btn-primary" id="submit_btn" formaction="/make_selection" formmethod="post">Submit</button>
+<button type="button" class="btn btn-primary" onclick="load_current_selection()">Load</button>
 </form>
 </div>
 <div class="col">
     <ul>
-        <li>Deutsch gilt nicht als Fremdsprache</li>
-        <li class="alert alert-primary r1">Es müssen 2-4 Fremdsprachen gewählt werden</li>
-        <li>It, E, F, L gelten unabhängig von der Nationalität als Fremdsprache</li>
-        <li class="alert alert-primary r2">Es <b>muss</b> Kunst <b>oder</b> Musik gewählt werden</li>
-        <li class="alert alert-primary r3">Es kann nur Erdkunde <b>oder</b> Sozialkunde gewählt werden</li>
-        <li class="alert alert-primary r4">Es kann nur Religion <b>oder</b> Ethik gewählt werden</li>
-        <li class="alert alert-primary r5">Wenn keine Philosophie belegt wird, dann muss Religion oder Ethik belegt werden</li>
-        <li class="alert alert-primary r6">Es müssen <b>genau zwei</b> der Fächer Physik, Biologie oder Chemie gewählt werden</li>
+        {{#each rules}}
+            <li {{#if this.subs}}class="alert alert-primary r{{this._number}}"{{/if}}> {{{this.desc}}}</li>
+        {{/each}}
         <li><b>Wochenstundzahl:</b><b class="alert alert-primary" id="hcount">4</b></li>
     </ul>
     <button type="button" class="btn btn-success" value="Verify" onclick="verify_all()" hidden>Verify</button>
@@ -98,4 +71,3 @@
 </div>
 </div>
 <script src="/javascripts/selection_verify.js"></script>
-<script>verify_all()</script>

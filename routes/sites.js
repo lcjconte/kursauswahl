@@ -6,6 +6,26 @@ var {newUser} = require("../src/users");
 var {flashCookie} = require("../src/helpers");
 const { subject_ordered } = require('../src/subject_selection');
 
+//Read rulefiles and inject data
+var fs = require('fs')
+var table_json = JSON.parse(fs.readFileSync("./public/table.json", "utf8"))
+var subjects_json = JSON.parse(fs.readFileSync("./public/subjects.json", "utf8"))
+table_json.forEach(table_group => {
+    table_group.rows.forEach(row => {
+        if (row["name"] === undefined) {
+            row["name"] = subjects_json[row["id"]]
+        }
+    })
+})
+var ruleset_json = JSON.parse(fs.readFileSync("./public/ruleset.json", "utf8"))
+var cnt = 0
+ruleset_json.forEach(rule => {
+    if (rule["subs"] !== undefined) {
+        rule._number = cnt
+        cnt += 1
+    }
+})
+
 router.get("/", (req, res, next) => {
     res.redirect("/login");
 })
@@ -43,9 +63,14 @@ router.get("/logout", restrict("user"), (req, res, next) => {
     res.redirect("/login");
 });
 
+router.get("/ruleset", (req, res, next) => {
+    res.send(ruleset_json)
+})
+
 router.get('/make_selection', restrict("user"), (req, res, next) => {
     res.render('selection', { 
-        title: 'Kursauswahl: Auswahl', failure: "__selF" in req.cookies, success: "__selS" in req.cookies
+        title: 'Kursauswahl: Auswahl', failure: "__selF" in req.cookies, success: "__selS" in req.cookies,
+        table: table_json, rules: ruleset_json
     })
 });
 
@@ -55,7 +80,6 @@ router.post("/make_selection", restrict("user", true), async (req, res, next) =>
     subject_ordered.forEach(el => {
         if (el in req.body && req.body[el] == "on") {
             sel_object[el] = true;
-            console.log(el);
         }
     })
     var ans = await db.set_selection_alt(res.locals.user.uid, sel_object)
