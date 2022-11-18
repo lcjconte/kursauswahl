@@ -3,7 +3,7 @@ r_list = [];
 for (let i = 0; document.getElementsByClassName("r"+i.toString()).length > 0; i++) {
     r_list.push(document.getElementsByClassName("r"+i.toString())[0]);
 }
-check_boxes = {};
+var check_boxes = {};
 const ids = []
 const hours = {};
 var _check_boxes = document.getElementsByClassName("subject_checkbox")

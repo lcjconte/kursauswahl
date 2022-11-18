@@ -1,7 +1,7 @@
 {{!-- Auf dieser Seite sollen die Schüler einer Gruppe verwaltet werden --}}
 <ul class="user_list">
   {{#each users}}
-    <li>{{this}}</li>
+    <li>{{this.name}}{{#unless this.submitted}} No submission! {{/unless}}</li>
   {{/each}}
 </ul>
 <a href="download">Download selection</a>

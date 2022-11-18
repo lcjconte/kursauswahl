@@ -1,30 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var {restrict, createSession, sessionUser, endSession} = require("../src/auth");
-var db = require("../src/db_manage");
-var {newUser} = require("../src/users");
-var {flashCookie} = require("../src/helpers");
+var {restrict, createSession, sessionUser, endSession} = require("../src/session");
+var userdb = require("../src/userdb")
+var selections = require("../src/subject_selection")
 const { subject_ordered } = require('../src/subject_selection');
-
-//Read rulefiles and inject data
-var fs = require('fs')
-var table_json = JSON.parse(fs.readFileSync("./public/table.json", "utf8"))
-var subjects_json = JSON.parse(fs.readFileSync("./public/subjects.json", "utf8"))
-table_json.forEach(table_group => {
-    table_group.rows.forEach(row => {
-        if (row["name"] === undefined) {
-            row["name"] = subjects_json[row["id"]]
-        }
-    })
-})
-var ruleset_json = JSON.parse(fs.readFileSync("./public/ruleset.json", "utf8"))
-var cnt = 0
-ruleset_json.forEach(rule => {
-    if (rule["subs"] !== undefined) {
-        rule._number = cnt
-        cnt += 1
-    }
-})
+var {flashCookie} = require("../src/helpers");
+var {table, rules} = require("../src/load_config");
 
 router.get("/", (req, res, next) => {
     res.redirect("/login");
@@ -64,13 +45,13 @@ router.get("/logout", restrict("user"), (req, res, next) => {
 });
 
 router.get("/ruleset", (req, res, next) => {
-    res.send(ruleset_json)
+    res.send(rules)
 })
 
 router.get('/make_selection', restrict("user"), (req, res, next) => {
     res.render('selection', { 
         title: 'Kursauswahl: Auswahl', failure: "__selF" in req.cookies, success: "__selS" in req.cookies,
-        table: table_json, rules: ruleset_json
+        table: table, rules: rules
     })
 });
 
@@ -82,7 +63,7 @@ router.post("/make_selection", restrict("user", true), async (req, res, next) =>
             sel_object[el] = true;
         }
     })
-    var ans = await db.set_selection_alt(res.locals.user.uid, sel_object)
+    var ans = await selections.set_selection_alt(res.locals.user.uid, sel_object)
     if (ans) {
         flashCookie(res, "selS", "")
     }
@@ -101,21 +82,22 @@ router.get("/dashboard", restrict("user"), async function(req, res, next) { try 
 
 router.get("/admin", restrict("admin"), async (req, res, next) => {
     try {
-    res.render("admin", { title: "Kursauswahl: Admin panel", groups: await db.get_groups(), 
+    res.render("admin", { title: "Kursauswahl: Admin panel", groups: await userdb.get_groups(), 
                             csucc: "__regS" in req.cookies, cwrong: "__regF" in req.cookies});
     } catch (error) {next(error)}
 });
 
 router.get("/group/:gname", restrict("admin"), async (req, res, next) => {
     try {
-    let users = (await db.users_by_group(req.params.gname)).map((val) => val["username"]);
+    let selection_missing = (await userdb.users_missing_selection(req.params.gname)).map(val => val["userid"]);
+    let users = (await userdb.users_by_group(req.params.gname)).map((val) => ({name: val["username"], submitted: !(selection_missing.includes(val["userid"]))}));
     res.render('group', { title: 'Kursauswahl: User' , users});
     } catch (error) {next(error)}
 });
 
 router.get("/group/:gname/download", restrict("admin"), async (req, res, next) => {
     try {
-        var csv = await db.selections_as_csv(req.params.gname)
+        var csv = await selections.selections_as_csv(req.params.gname)
         res.attachment("selections"+req.params.gname+".csv")
         res.type("txt")
         res.send(csv)
@@ -128,7 +110,7 @@ router.post("/register_user", restrict("admin", true), async (req, res, next) =>
     let upwd = req.body.pwd;
     let isadmin = req.body.isadmin === "on";
     let group = req.body.group || "na";
-    let success = await newUser(uname, upwd, isadmin, group);
+    let success = await userdb.newUser(uname, upwd, isadmin, group);
     if (success) {
         flashCookie(res, "regS", "")
     }
