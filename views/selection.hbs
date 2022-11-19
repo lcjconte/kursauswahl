@@ -13,7 +13,7 @@
     <tr>
         <td scope="row">{{name}}</td>
         <td>{{h}}</td>
-        <td><input class="form-check-input subject_checkbox" type="checkbox" id="{{id}}" name="{{id}}" onclick="verify_all()"></td>
+        <td><input class="form-check-input subject_checkbox" type="checkbox" id="{{id}}" name="{{id}}" onclick="verifyAll()"></td>
     </tr>
     {{/inline}}
     {{#*inline "srowf"}}
@@ -46,7 +46,7 @@
     {{/each}}
 </table>
 <button type="submit" class="btn btn-primary" id="submit_btn" formaction="/make_selection" formmethod="post">Submit</button>
-<button type="button" class="btn btn-primary" onclick="load_current_selection()">Load</button>
+<button type="button" class="btn btn-primary" onclick="loadCurrentSelection()">Load</button>
 </form>
 </div>
 <div class="col">
@@ -56,7 +56,7 @@
         {{/each}}
         <li><b>Wochenstundzahl:</b><b class="alert alert-primary" id="hcount">4</b></li>
     </ul>
-    <button type="button" class="btn btn-success" value="Verify" onclick="verify_all()" hidden>Verify</button>
+    <button type="button" class="btn btn-success" value="Verify" onclick="verifyAll()" hidden>Verify</button>
     {{#if failure}}
     <div class="alert alert-danger" role="alert">
     Selection failed

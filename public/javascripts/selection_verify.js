@@ -1,67 +1,65 @@
-//#region Collect document elements
-r_list = [];
-for (let i = 0; document.getElementsByClassName("r"+i.toString()).length > 0; i++) {
-    r_list.push(document.getElementsByClassName("r"+i.toString())[0]);
+// #region Collect document elements
+let rList = []
+for (let i = 0; document.getElementsByClassName("r" + i.toString()).length > 0; i++) {
+    rList.push(document.getElementsByClassName("r" + i.toString())[0])
 }
-var check_boxes = {};
+let checkBoxes = {}
 const ids = []
-const hours = {};
-var _check_boxes = document.getElementsByClassName("subject_checkbox")
-for (let i = 0; i < _check_boxes.length; i++) {
-    const check_box = _check_boxes[i];
-    check_box.parentElement.children[1];
-    check_boxes[check_box.id] = check_box
-    ids.push(check_box.id)
-    hours[check_box.id] = parseInt(check_box.parentElement.parentElement.children[1].innerHTML)
+const hours = {}
+let _checkBoxes = document.getElementsByClassName("subject_checkbox")
+for (let i = 0; i < _checkBoxes.length; i++) {
+    const checkBox = _checkBoxes[i]
+    checkBoxes[checkBox.id] = checkBox
+    ids.push(checkBox.id)
+    hours[checkBox.id] = parseInt(checkBox.parentElement.parentElement.children[1].innerHTML)
 }
-//#endregion
+// #endregion
 
 function setgreen(el) {
-    if (el.classList.contains("alert-primary")) {el.classList.remove("alert-primary");}
-    if (el.classList.contains("alert-danger")) {el.classList.remove("alert-danger");}
-    el.classList.add("alert-success");
+    if (el.classList.contains("alert-primary")) { el.classList.remove("alert-primary") }
+    if (el.classList.contains("alert-danger")) { el.classList.remove("alert-danger") }
+    el.classList.add("alert-success")
 }
 function setred(el) {
-    if (el.classList.contains("alert-primary")) {el.classList.remove("alert-primary");}
-    if (el.classList.contains("alert-success")) {el.classList.remove("alert-success");}
-    el.classList.add("alert-danger");
+    if (el.classList.contains("alert-primary")) { el.classList.remove("alert-primary") }
+    if (el.classList.contains("alert-success")) { el.classList.remove("alert-success") }
+    el.classList.add("alert-danger")
 }
-//Counts how many subjects in li are selected
-function count_appl(li) {
-    var cnt = 0;
+// Counts how many subjects in li are selected
+function countAppl(li) {
+    let cnt = 0
     li.forEach(cid => {
-        if (check_boxes[cid].checked) {
-            cnt++;
+        if (checkBoxes[cid].checked) {
+            cnt++
         }
-    });
-    return cnt;
+    })
+    return cnt
 }
-function apply_rule(val, el) {
+function applyRule(val, el) {
     if (val) {
-        setgreen(el);
-        return true;
-    }
-    else {
-        setred(el);
-        return false;
+        setgreen(el)
+        return true
+    } else {
+        setred(el)
+        return false
     }
 }
-var ruleset = undefined
+let ruleset
 fetch("/ruleset")
     .then(r => r.json())
-    .then(data => ruleset = data)
-    .then(() => verify_all())
+    .then(data => { ruleset = data })
+    .then(() => verifyAll())
 
-//Applies all rules
-function verify_all() {
+// Applies all rules
+function verifyAll() {
     if (ruleset === undefined) {
         return false
     }
 
-    var all_apply = true;
+    let allApply = true
     ruleset.forEach(rule => {
-        if (rule["subs"] === undefined) {return}
-        var cnt = count_appl(rule.subs)
+        if (rule.subs === undefined) { return }
+        let cnt = countAppl(rule.subs)
         let truth = true
         if (rule.ge) {
             truth &= cnt >= rule.ge
@@ -69,39 +67,39 @@ function verify_all() {
         if (rule.le) {
             truth &= cnt <= rule.le
         }
-        all_apply &= apply_rule(truth, r_list[rule._number])
+        allApply &= applyRule(truth, rList[rule._number])
     })
 
-    //Wochenstunden
-    cnt = 0;
+    // Wochenstunden
+    let cnt = 0
     for (let i = 0; i < ids.length; i++) {
-        if (check_boxes[ids[i]].checked) {
-            cnt += hours[ids[i]];
-        }        
+        if (checkBoxes[ids[i]].checked) {
+            cnt += hours[ids[i]]
+        }
     }
-    var el = document.getElementById("hcount")
-    el.innerHTML = cnt.toString();
-    all_apply &= apply_rule(cnt >= 35, el);
-    btn_el = document.getElementById("submit_btn");
-    if (btn_el.hasAttribute("disabled") && all_apply) {
-        btn_el.removeAttribute("disabled");
-    }
-    else if (!all_apply) {
-        btn_el.setAttribute("disabled", "");
+    let el = document.getElementById("hcount")
+    el.innerHTML = cnt.toString()
+    allApply &= applyRule(cnt >= 35, el)
+    let btnEl = document.getElementById("submit_btn")
+    if (btnEl.hasAttribute("disabled") && allApply) {
+        btnEl.removeAttribute("disabled")
+    } else if (!allApply) {
+        btnEl.setAttribute("disabled", "")
     }
 }
-//Fetches current selection
-function load_current_selection() {
+// Fetches current selection
+// eslint-disable-next-line no-unused-vars
+function loadCurrentSelection() {
     let uid = document.getElementById("uid").content
-    fetch("/api/selection?uid="+uid)
+    fetch("/api/selection?uid=" + uid)
         .then(r => r.json())
         .then(data => {
             ids.forEach(sub => {
-                check_boxes[sub].checked = false
+                checkBoxes[sub].checked = false
             })
             data.selected.forEach(sub => {
-                check_boxes[sub].checked = true
+                checkBoxes[sub].checked = true
             })
-            verify_all()
+            verifyAll()
         })
 }

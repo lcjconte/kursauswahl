@@ -1,58 +1,60 @@
-var db = require("./db");
-var subject_ordered = ["de","it","en","fr","la","mu","ku","ge","ek","so","ec","re","et","fi","st","ma","ph","bi","ch","cs","sp"];
+/* eslint-disable comma-spacing */
+/* eslint-disable no-multi-str */
+let db = require("./db")
+let subjectsOrdered = ["de","it","en","fr","la","mu","ku","ge","ek","so","ec","re","et","fi","st","ma","ph","bi","ch","cs","sp"]
 
-async function get_selection(userid) {
-    var result = (await db.query("SELECT * FROM selections WHERE userid = $1", [userid])).rows[0];
-    return result;
+async function getSelection(userid) {
+    let result = (await db.query("SELECT * FROM selections WHERE userid = $1", [userid])).rows[0]
+    return result
 }
-async function set_selection_alt(userid, sel) {
-    let f = s => sel[s]!==undefined;
-    return set_selection(userid, 
+async function setSelectionAlt(userid, sel) {
+    let f = s => sel[s] !== undefined
+    return setSelection(userid,
         f("de"),f("it"),f("en"),f("fr"),f("la"),f("mu"),f("ku"),f("ge"),
         f("ek"),f("so"),f("ec"),f("re"),f("et"),f("fi"),f("st"),f("ma"),
-        f("ph"),f("bi"),f("ch"),f("cs"),f("sp"));
+        f("ph"),f("bi"),f("ch"),f("cs"),f("sp"))
 }
-async function set_selection(userid, de,it,en,fr,la,mu,ku,ge,ek,so,ec,re,et,fi,st,ma,ph,bi,ch,cs,sp) {
-    var result = await db.query(
+async function setSelection(userid, de,it,en,fr,la,mu,ku,ge,ek,so,ec,re,et,fi,st,ma,ph,bi,ch,cs,sp) {
+    let result = await db.query(
         "UPDATE selections SET de=$1, it=$2, en=$3, fr=$4, la=$5, mu=$6, ku=$7, ge=$8, \
         ek=$9, so=$10, ec=$11, re=$12, et=$13, fi=$14, st=$15, ma=$16, ph=$17, bi=$18, \
         ch=$19, cs=$20, sp=$21, submitted=true \
-        WHERE userid=$22", 
+        WHERE userid=$22",
         [de,it,en,fr,la,mu,ku,ge,ek,so,ec,re,et,fi,st,ma,ph,bi,ch,cs,sp, userid])
     if (result.rowCount === 0) {
-        return false;
+        return false
     }
-    return true;
+    return true
 }
-async function selections_as_csv(group_name) {
-    var a = await db.query("\
+async function selectionsAsCSV(groupName) {
+    let a = await db.query("\
         SELECT (username, submitted, de, it, en, fr, la, mu, ku, ge, ek, so, ec, re, et, fi, st, ma, ph, bi, ch, cs, sp) FROM selections \
         INNER JOIN userdata on userdata.userid = selections.userid \
         WHERE userdata.group_tag = $1 \
-        ", [group_name])
-    var csv_string = "Name,"
-    subject_ordered.forEach(val => {
-        csv_string += val+","
+        ", [groupName])
+    let csvString = "Name,"
+    subjectsOrdered.forEach(val => {
+        csvString += val + ","
     })
-    csv_string += "\n"
+    csvString += "\n"
     a.rows.forEach(row => {
-        var s = row.row;
-        var submitted = 3
-        s.substring(1, s.length-1).split(",").forEach(val => {
+        let s = row.row
+        let submitted = 3
+        s.substring(1, s.length - 1).split(",").forEach(val => {
             if (submitted === 2) {
-                submitted = val == "t"
+                submitted = val === "t"
                 return
             }
             if (submitted === false) {
                 val = "N/A"
             }
-            csv_string += val+","
+            csvString += val + ","
             if (submitted === 3) {
                 submitted = 2
             }
         })
-        csv_string += "\n"
+        csvString += "\n"
     })
-    return csv_string
+    return csvString
 }
-module.exports = { subject_ordered, get_selection, set_selection, set_selection_alt, selections_as_csv};
+module.exports = { subjectsOrdered, getSelection, setSelection, setSelectionAlt, selectionsAsCSV }
