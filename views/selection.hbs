@@ -45,8 +45,10 @@
         </tbody>
     {{/each}}
 </table>
+{{#unless buttons_disabled}}
 <button type="submit" class="btn btn-primary" id="submit_btn" formaction="/make_selection" formmethod="post">Submit</button>
 <button type="button" class="btn btn-primary" onclick="loadCurrentSelection()">Load</button>
+{{/unless}}
 </form>
 </div>
 <div class="col">
@@ -56,7 +58,6 @@
         {{/each}}
         <li><b>Wochenstundzahl:</b><b class="alert alert-primary" id="hcount">4</b></li>
     </ul>
-    <button type="button" class="btn btn-success" value="Verify" onclick="verifyAll()" hidden>Verify</button>
     {{#if failure}}
     <div class="alert alert-danger" role="alert">
     Selection failed

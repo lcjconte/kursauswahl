@@ -48,6 +48,9 @@ async function selectionsAsCSV(groupName) {
             if (submitted === false) {
                 val = "N/A"
             }
+            if (val === "f") {
+                val = 0
+            }
             csvString += val + ","
             if (submitted === 3) {
                 submitted = 2
