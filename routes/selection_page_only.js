@@ -6,6 +6,10 @@ router.get("/ruleset", (req, res, next) => {
     res.send(rules)
 })
 
+router.get("/dashboard", (req, res, next) => {
+    res.redirect("/")
+})
+
 router.get("/", (req, res, next) => {
     res.render("selection", {
         title: "Kursauswahl: Auswahl",
