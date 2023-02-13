@@ -16,8 +16,8 @@
         "rows": [
             {"id": "ge", "hours": 3, "force": true},
             {"id": "ek", "hours": 2, "force": false, "name": "Erdkunde (f)"},
-            {"id": "so", "hours": 2, "force": false},
-            {"id": "ec", "hours": 2, "force": false},
+            {"id": "so", "hours": 2, "force": false, "name": "Sozialkunde (f)"},
+            {"id": "ec", "hours": 2, "force": false, "name": "Economics (f)"},
             {"id": "re", "hours": 2, "force": false},
             {"id": "et", "hours": 2, "force": false},
             {"id": "fi", "hours": 2, "force": false},
@@ -31,7 +31,7 @@
             {"id": "ph", "hours": 3, "force": false},
             {"id": "bi", "hours": 3, "force": false},
             {"id": "ch", "hours": 3, "force": false},
-            {"id": "cs", "hours": 2, "force": false}
+            {"id": "cs", "hours": 2, "force": false, "name": "Informatik (f)"}
         ]
     },
     {

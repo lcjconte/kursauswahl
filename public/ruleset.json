@@ -18,11 +18,6 @@
         "subs": ["ku", "mu"]
     },
     {
-        "desc": "Es kann nur Erdkunde <b>oder</b> Sozialkunde gewählt werden",
-        "le": 1,
-        "subs": ["ek", "so"]
-    },
-    {
         "desc": "Es kann nur Religion <b>oder</b> Ethik gewählt werden",
         "le": 1,
         "subs": ["re", "et"]
