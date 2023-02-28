@@ -1,7 +1,7 @@
 // #region Collect document elements
-let rList = []
+let ruleElements = []
 for (let i = 0; document.getElementsByClassName("r" + i.toString()).length > 0; i++) {
-    rList.push(document.getElementsByClassName("r" + i.toString())[0])
+    ruleElements.push(document.getElementsByClassName("r" + i.toString())[0])
 }
 let checkBoxes = {}
 const ids = []
@@ -44,6 +44,20 @@ function applyRule(val, el) {
         return false
     }
 }
+function applyHCount(val, el) {
+    if (el.classList.contains("alert-danger")) { el.classList.remove("alert-danger") }
+    if (el.classList.contains("alert-success")) { el.classList.remove("alert-success") }
+    if (el.classList.contains("alert-warning")) { el.classList.remove("alert-warning") }
+    if (val < 35) {
+        el.classList.add("alert-danger")
+        return false
+    } else if (val === 35) {
+        el.classList.add("alert-warning")
+    } else {
+        el.classList.add("alert-success")
+    }
+    return true
+}
 let ruleset
 fetch("/ruleset")
     .then(r => r.json())
@@ -67,7 +81,7 @@ function verifyAll() {
         if (rule.le) {
             truth &= cnt <= rule.le
         }
-        allApply &= applyRule(truth, rList[rule._number])
+        allApply &= applyRule(truth, ruleElements[rule._number])
     })
 
     // Wochenstunden
@@ -79,7 +93,13 @@ function verifyAll() {
     }
     let el = document.getElementById("hcount")
     el.innerHTML = cnt.toString()
-    allApply &= applyRule(cnt >= 35, el)
+    allApply &= applyHCount(cnt, el)
+    if (allApply) {
+        setgreen(document.getElementById("sel_valid_alert"))
+    } else {
+        setred(document.getElementById("sel_valid_alert"))
+    }
+
     let btnEl = document.getElementById("submit_btn")
     if (btnEl.hasAttribute("disabled") && allApply) {
         btnEl.removeAttribute("disabled")
@@ -98,7 +118,9 @@ function loadCurrentSelection() {
                 checkBoxes[sub].checked = false
             })
             data.selected.forEach(sub => {
-                checkBoxes[sub].checked = true
+                if (checkBoxes[sub]) {
+                    checkBoxes[sub].checked = true
+                }
             })
             verifyAll()
         })

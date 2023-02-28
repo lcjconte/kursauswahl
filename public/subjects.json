@@ -1,6 +1,7 @@
 {
     "de": "Deutsch",
     "it": "Italienisch",
+    "ia": "Italienisch als Fremdsprache",
     "en": "Englisch",
     "fr": "Französisch",
     "la": "Latein",
@@ -10,9 +11,8 @@
     "ek": "Erdkunde",
     "so": "Sozialkunde",
     "ec": "Economics",
-    "re": "Religion",
     "et": "Ethik",
-    "fi": "Philosofie",
+    "fi": "Philosophie",
     "st": "Storia",
     "ma": "Mathematik",
     "ph": "Physik",

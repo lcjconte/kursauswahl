@@ -3,10 +3,11 @@
         "title": "Aufgabenfeld I",
         "rows": [
             {"id": "de", "hours": 4, "force": true},
-            {"id": "it", "hours": 4, "force": true},
+            {"id": "it", "hours": 4, "force": false},
+            {"id": "ia", "hours": 4, "force": false},
             {"id": "en", "hours": 4, "force": false},
-            {"id": "fr", "hours": 4, "force": false},
-            {"id": "la", "hours": 4, "force": false},
+            {"id": "fr", "hours": 3, "force": false},
+            {"id": "la", "hours": 3, "force": false},
             {"id": "ku", "hours": 2, "force": false},
             {"id": "mu", "hours": 2, "force": false}
         ]
@@ -15,10 +16,9 @@
         "title": "Aufgabenfeld II",
         "rows": [
             {"id": "ge", "hours": 3, "force": true},
-            {"id": "ek", "hours": 2, "force": false, "name": "Erdkunde (f)"},
-            {"id": "so", "hours": 2, "force": false, "name": "Sozialkunde (f)"},
-            {"id": "ec", "hours": 2, "force": false, "name": "Economics (f)"},
-            {"id": "re", "hours": 2, "force": false},
+            {"id": "ek", "hours": 2, "force": false},
+            {"id": "so", "hours": 2, "force": false},
+            {"id": "ec", "hours": 2, "force": false},
             {"id": "et", "hours": 2, "force": false},
             {"id": "fi", "hours": 2, "force": false},
             {"id": "st", "hours": 2, "force": false}
@@ -31,7 +31,7 @@
             {"id": "ph", "hours": 3, "force": false},
             {"id": "bi", "hours": 3, "force": false},
             {"id": "ch", "hours": 3, "force": false},
-            {"id": "cs", "hours": 2, "force": false, "name": "Informatik (f)"}
+            {"id": "cs", "hours": 2, "force": false}
         ]
     },
     {

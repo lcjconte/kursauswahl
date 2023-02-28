@@ -65,7 +65,7 @@ router.post("/make_selection", restrict("user", true), async (req, res, next) =>
                 selObject[el] = true
             }
         })
-        let ans = await selections.setSelectionAlt(res.locals.user.uid, selObject)
+        let ans = await selections.setSelection(res.locals.user.uid, selObject)
         if (ans) {
             flashCookie(res, "selS", "")
         } else {
@@ -104,7 +104,7 @@ router.get("/group/:gname", restrict("admin"), async (req, res, next) => {
 router.get("/group/:gname/download", restrict("admin"), async (req, res, next) => {
     try {
         let csv = await selections.selectionsAsCSV(req.params.gname)
-        res.attachment("selections" + req.params.gname + ".csv")
+        res.attachment("selections_" + req.params.gname + ".csv")
         res.type("txt")
         res.send(csv)
     } catch (error) { next(error) }

@@ -7,7 +7,11 @@ let rulesetJson = JSON.parse(fs.readFileSync("./public/ruleset.json", "utf8"))
 tableJson.forEach(tableGroup => {
     tableGroup.rows.forEach(row => {
         if (row.name === undefined) {
-            row.name = subjectsJson[row.id]
+            if (subjectsJson[row.id] === undefined) {
+                row.name = '"' + row.id + '"'
+            } else {
+                row.name = subjectsJson[row.id]
+            }
         }
     })
 })
@@ -20,4 +24,4 @@ rulesetJson.forEach(rule => {
     }
 })
 
-module.exports = { table: tableJson, subject_names: subjectsJson, rules: rulesetJson }
+module.exports = { table: tableJson, subjectNames: subjectsJson, rules: rulesetJson }

@@ -6,10 +6,6 @@ let cookieParser = require("cookie-parser")
 let logger = require("morgan")
 let RateLimit = require("express-rate-limit")
 
-let siteRouter = require("./routes/sites")
-let apiRouter = require("./routes/api")
-let altSiteRouter = require("./routes/selection_page_only")
-
 let app = express()
 
 // view engine setup
@@ -36,11 +32,15 @@ app.use((req, res, next) => {
     }
     next()
 })
-console.log(process.env.SELECTION_PAGE_ONLY)
 if (process.env.SELECTION_PAGE_ONLY === "") {
+    let siteRouter = require("./routes/sites")
+    let apiRouter = require("./routes/api")
+
     app.use("/", siteRouter)
     app.use("/api", apiRouter)
 } else {
+    let altSiteRouter = require("./routes/selection_page_only")
+
     app.use("/", altSiteRouter)
 }
 

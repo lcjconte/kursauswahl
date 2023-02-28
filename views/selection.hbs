@@ -1,63 +1,66 @@
 {{!-- Auf dieser Seite sollen die Kurse ausgewählt werden --}}
 <div class="container">
+
 <div class="row">
     <div class="col"><h1>Auswahl</h1></div>
     <div class="col"><h1>Regeln</h1></div>
 </div>
 <div class="row">
-<div class="col">
-<form>
-<input type="hidden" value="{{csrf_token}}" name="_csrf">
-<table class="table table-sm">
-    {{#*inline "srow"}}
-    <tr>
-        <td scope="row">{{name}}</td>
-        <td>{{h}}</td>
-        <td><input class="form-check-input subject_checkbox" type="checkbox" id="{{id}}" name="{{id}}" onclick="verifyAll()"></td>
-    </tr>
-    {{/inline}}
-    {{#*inline "srowf"}}
-    <tr>
-        <td scope="row">{{name}}</td>
-        <td>{{h}}</td>
-        <td><input class="form-check-input subject_checkbox" type="checkbox" checked disabled id="{{id}}"></td>
-        <input class="form-check-input" type="checkbox" checked hidden name="{{id}}">
-    </tr>
-    {{/inline}}
 
-    {{#each table}}
-        <tbody>
-            <tr>
-                <th scope="col">{{this.title}}</th>
-                <th scope="col">Wochenstundenzahl</th>
-                <th scope="col">Wahl</th>
-            </tr>
-        </tbody>
-        <tbody class="table-group-divider">
-            {{#each this.rows}}
-                {{#if this.force}}
-                    {{> srowf name=this.name id=this.id h=this.hours}}
-                {{/if}}
-                {{#unless this.force}}
-                    {{> srow name=this.name id=this.id h=this.hours}}
-                {{/unless}}
-            {{/each}}
-        </tbody>
-    {{/each}}
-</table>
-{{#unless buttons_disabled}}
-<button type="submit" class="btn btn-primary" id="submit_btn" formaction="/make_selection" formmethod="post">Submit</button>
-<button type="button" class="btn btn-primary" onclick="loadCurrentSelection()">Load</button>
-{{/unless}}
-</form>
+<div class="col">
+    <form>
+    <input type="hidden" value="{{csrf_token}}" name="_csrf">
+    <table class="table table-sm">
+        {{#*inline "srow"}}
+        <tr>
+            <td scope="row">{{name}}</td>
+            <td>{{h}}</td>
+            <td><input class="form-check-input subject_checkbox" type="checkbox" id="{{id}}" name="{{id}}" onclick="verifyAll()"></td>
+        </tr>
+        {{/inline}}
+        {{#*inline "srowf"}}
+        <tr>
+            <td scope="row">{{name}}</td>
+            <td>{{h}}</td>
+            <td><input class="form-check-input subject_checkbox" type="checkbox" checked disabled id="{{id}}"></td>
+            <input class="form-check-input" type="checkbox" checked hidden name="{{id}}">
+        </tr>
+        {{/inline}}
+
+        {{#each table}}
+            <tbody>
+                <tr>
+                    <th scope="col">{{this.title}}</th>
+                    <th scope="col">Wochenstundenzahl</th>
+                    <th scope="col">Wahl</th>
+                </tr>
+            </tbody>
+            <tbody class="table-group-divider">
+                {{#each this.rows}}
+                    {{#if this.force}}
+                        {{> srowf name=this.name id=this.id h=this.hours}}
+                    {{/if}}
+                    {{#unless this.force}}
+                        {{> srow name=this.name id=this.id h=this.hours}}
+                    {{/unless}}
+                {{/each}}
+            </tbody>
+        {{/each}}
+    </table>
+    {{#unless buttons_disabled}}
+    <button type="submit" class="btn btn-primary" id="submit_btn" formaction="/make_selection" formmethod="post">Submit</button>
+    <button type="button" class="btn btn-primary" onclick="loadCurrentSelection()">Load</button>
+    {{/unless}}
+    </form>
 </div>
 <div class="col">
     <ul>
         {{#each rules}}
-            <li {{#if this.subs}}class="alert alert-primary r{{this._number}}"{{/if}}> {{{this.desc}}}</li>
+            <li {{#if this.subs}}class="alert alert-primary r{{this._number}}"{{/if}}>{{{this.desc}}}</li>
         {{/each}}
         <li><b>Wochenstundenzahl:</b><b class="alert alert-primary" id="hcount">4</b></li>
     </ul>
+    <div class="alert alert-primary" id="sel_valid_alert">Selection Valid</div>
     {{#if failure}}
     <div class="alert alert-danger" role="alert">
     Selection failed
@@ -69,6 +72,7 @@
     </div>
     {{/if}}
 </div>
+
 </div>
 </div>
 <script src="/javascripts/selection_verify.js"></script>
