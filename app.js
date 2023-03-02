@@ -32,7 +32,7 @@ app.use((req, res, next) => {
     }
     next()
 })
-if (process.env.SELECTION_PAGE_ONLY === "") {
+if (process.env.SELECTION_PAGE_ONLY === undefined || process.env.SELECTION_PAGE_ONLY === "") {
     let siteRouter = require("./routes/sites")
     let apiRouter = require("./routes/api")
 
