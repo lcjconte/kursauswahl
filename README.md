@@ -1,5 +1,9 @@
 # kursauswahl
-Simple web app allowing students to select their subjects online
+Simple web app allowing students to select their subjects online.
+
+Previously students would fill out a paper form, only to find out that their selection was actually invalid.
+With this app they can (1) Try out different combinations (2) Register their selection.
+Courses, rules and interface are customizable. 
 
 ## Before deploying:  
 - Apply selections.sql and userdata.sql to postgres db  
